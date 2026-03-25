@@ -1,0 +1,19 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Run tablet web server",
+			"type": "shell",
+			"command": "c:/Users/jacob/Desktop/checklist/.venv/Scripts/python.exe",
+			"args": [
+				"-m",
+				"http.server",
+				"4173",
+				"--bind",
+				"0.0.0.0"
+			],
+			"isBackground": true,
+			"group": "build"
+		}
+	]
+}

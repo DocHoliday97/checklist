@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192">
+  <rect width="192" height="192" rx="32" fill="#0d1117"/>
+  <!-- Jet silhouette -->
+  <g fill="#58a6ff">
+    <!-- Fuselage -->
+    <ellipse cx="96" cy="96" rx="10" ry="52"/>
+    <!-- Wings -->
+    <polygon points="96,80 40,120 60,120 96,95 132,120 152,120"/>
+    <!-- Tail fins -->
+    <polygon points="96,135 70,155 80,155 96,140 112,155 122,155"/>
+    <!-- Nose cone -->
+    <polygon points="96,44 90,60 102,60"/>
+  </g>
+  <!-- Checklist lines -->
+  <rect x="58" y="68" width="4" height="4" rx="1" fill="#3fb950"/>
+  <rect x="66" y="68" width="20" height="4" rx="2" fill="#3fb950" opacity="0.6"/>
+  <rect x="58" y="76" width="4" height="4" rx="1" fill="#3fb950"/>
+  <rect x="66" y="76" width="16" height="4" rx="2" fill="#3fb950" opacity="0.6"/>
+</svg>

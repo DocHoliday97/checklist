@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="DCS Pilot" />
+  <meta name="theme-color" content="#0d1117" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="assets/icons/icon-192.png" />
+  <title>DCS Pilot</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- TOP NAV -->
+  <header class="top-bar">
+    <span class="app-title">DCS PILOT</span>
+    <div class="tab-switcher">
+      <button class="tab-btn active" data-tab="checklists">Checklists</button>
+      <button class="tab-btn" data-tab="charts">Charts</button>
+      <button class="tab-btn" data-tab="scratchpad">Scratch Pad</button>
+      <button class="tab-btn" data-tab="cas">CAS</button>
+      <button class="tab-btn" data-tab="conversions">Conversions</button>
+      <button class="tab-btn" data-tab="wab">W&amp;B</button>
+      <button class="tab-btn" data-tab="manuals">Manuals</button>
+    </div>
+  </header>
+
+  <!-- CHECKLISTS TAB -->
+  <section id="tab-checklists" class="tab-content active">
+    <div class="sidebar" id="checklist-sidebar">
+      <div class="sidebar-header">
+        <span>Aircraft / Phase</span>
+        <button class="icon-btn" id="add-checklist-btn" title="Add checklist">＋</button>
+      </div>
+      <div class="checklist-filters">
+        <select id="checklist-type-filter" title="Filter by aircraft type">
+          <option value="all">All Types</option>
+          <option value="fixed-wing">Fixed Wing</option>
+          <option value="rotary">Rotary</option>
+        </select>
+        <select id="checklist-aircraft-filter" title="Filter by aircraft">
+          <option value="all">All Aircraft</option>
+        </select>
+      </div>
+      <div class="aircraft-groups" id="aircraft-groups"></div>
+    </div>
+
+    <div class="main-panel" id="checklist-main">
+      <div class="checklist-toolbar">
+        <span class="checklist-title" id="active-checklist-title">Select a checklist</span>
+        <div class="toolbar-actions">
+          <button class="icon-btn" id="reset-checklist-btn" title="Reset checklist">↺</button>
+          <button class="icon-btn danger" id="delete-checklist-btn" title="Delete checklist">🗑</button>
+        </div>
+      </div>
+      <div class="checklist-items" id="checklist-items">
+        <div class="empty-state">
+          <p>Select a checklist from the left panel,<br/>or create a new one with ＋</p>
+        </div>
+      </div>
+      <div class="checklist-progress" id="checklist-progress" style="display:none;">
+        <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+        <span class="progress-label" id="progress-label">0 / 0</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- CHARTS TAB -->
+  <section id="tab-charts" class="tab-content">
+    <div class="sidebar" id="charts-sidebar">
+      <div class="sidebar-header">
+        <span>Saved Charts</span>
+        <label class="icon-btn" title="Add chart" id="add-chart-label">＋
+          <input type="file" id="add-chart-input" accept="image/*,application/pdf" multiple style="display:none;" />
+        </label>
+      </div>
+      <div class="charts-list" id="charts-list"></div>
+    </div>
+
+    <div class="main-panel" id="charts-main">
+      <div class="chart-toolbar">
+        <span class="chart-title" id="active-chart-title">Select a chart</span>
+        <div class="toolbar-actions">
+          <button class="icon-btn" id="zoom-in-btn" title="Zoom in">＋</button>
+          <button class="icon-btn" id="zoom-out-btn" title="Zoom out">－</button>
+          <button class="icon-btn" id="zoom-reset-btn" title="Reset zoom">⊡</button>
+          <button class="icon-btn danger" id="delete-chart-btn" title="Delete chart">🗑</button>
+        </div>
+      </div>
+      <div class="chart-viewer" id="chart-viewer">
+        <div class="empty-state">
+          <p>Tap ＋ to add airport charts<br/>(images or PDFs)</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCRATCH PAD TAB -->
+  <section id="tab-scratchpad" class="tab-content">
+    <div class="scratchpad-panel">
+      <div class="scratchpad-toolbar">
+        <span class="scratchpad-title">Scratch Pad</span>
+        <div class="toolbar-actions">
+          <button class="icon-btn danger" id="scratchpad-clear-btn" title="Clear notes">🗑</button>
+        </div>
+      </div>
+      <textarea
+        id="scratchpad-text"
+        class="scratchpad-text"
+        placeholder="Type notes here..."
+        spellcheck="false"
+      ></textarea>
+    </div>
+  </section>
+
+  <!-- CAS TAB -->
+  <section id="tab-cas" class="tab-content">
+    <div class="cas-panel">
+      <div class="cas-toolbar">
+        <span class="cas-title">CAS</span>
+        <div class="toolbar-actions">
+          <button class="icon-btn danger" id="cas-clear-btn" title="Clear CAS form">🗑</button>
+        </div>
+      </div>
+
+      <div class="cas-body">
+        <div class="cas-section-tabs" role="tablist" aria-label="CAS Sections">
+          <button class="cas-section-tab-btn active" type="button" data-cas-section-tab="forms" role="tab" aria-selected="true">CALLS</button>
+          <button class="cas-section-tab-btn" type="button" data-cas-section-tab="ref" role="tab" aria-selected="false">REF</button>
+        </div>
+
+        <div class="cas-section-pane active" data-cas-section="forms" role="tabpanel">
+          <div class="cas-card">
+            <div class="cas-card-header">
+              <h3>CAS Calls</h3>
+              <div class="cas-form-controls">
+                <label class="cas-form-picker">Form
+                  <select id="cas-form-select"></select>
+                </label>
+                <label class="cas-form-picker">Call
+                  <div class="cas-call-picker-row">
+                    <select id="cas-entry-select"></select>
+                    <button class="icon-btn" id="cas-add-call-btn" type="button" title="Add call">＋</button>
+                    <button class="icon-btn danger" id="cas-delete-call-btn" type="button" title="Delete current call">🗑</button>
+                  </div>
+                </label>
+              </div>
+            </div>
+            <form id="cas-form" class="cas-form" autocomplete="off"></form>
+          </div>
+
+          <div class="cas-card cas-rr-card">
+            <div class="cas-card-header">
+              <h3>Remarks &amp; Restrictions</h3>
+            </div>
+            <div id="cas-rr-list" class="cas-rr-list"></div>
+          </div>
+        </div>
+
+        <div class="cas-section-pane" data-cas-section="ref" role="tabpanel" hidden>
+          <div class="cas-card cas-reference-card">
+            <div class="cas-card-header">
+              <h3>CAS Reference Cards</h3>
+              <div class="cas-reference-controls">
+                <label class="cas-form-picker">Page
+                  <select id="cas-page-select"></select>
+                </label>
+                <button class="icon-btn" id="cas-ref-fullscreen-btn" type="button" title="Fullscreen reference">⤢</button>
+              </div>
+            </div>
+            <div id="cas-reference-status" class="cas-reference-status">Loading reference card pages...</div>
+            <div class="cas-reference-hint">Tap reference to fullscreen.</div>
+            <iframe id="cas-doc-viewer" class="cas-doc-viewer" title="CAS Reference Viewer (tap to fullscreen)" allowfullscreen></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONVERSIONS TAB -->
+  <section id="tab-conversions" class="tab-content">
+    <div class="conversions-panel">
+      <div class="conversions-toolbar">
+        <span class="conversions-title">Coordinate Conversions</span>
+      </div>
+
+      <div class="conversions-body">
+        <div class="conversions-input-card">
+          <div class="conversions-row">
+            <label for="conv-source-format">Source Format</label>
+            <select id="conv-source-format">
+              <option value="ll">Lat/Lon Decimal (LL)</option>
+              <option value="dms">Degrees Minutes Seconds (DMS)</option>
+              <option value="dmm">Degrees Decimal Minutes (DMM)</option>
+              <option value="mgrs">MGRS</option>
+            </select>
+          </div>
+
+          <div id="conv-input-ll" class="conv-input-block active">
+            <div class="conversions-grid-2">
+              <label>Latitude (decimal degrees)
+                <input id="conv-ll-lat" type="number" step="any" placeholder="e.g. 36.2500" />
+              </label>
+              <label>Longitude (decimal degrees)
+                <input id="conv-ll-lon" type="number" step="any" placeholder="e.g. -115.1700" />
+              </label>
+            </div>
+          </div>
+
+          <div id="conv-input-dms" class="conv-input-block">
+            <div class="conversions-grid-4">
+              <label>Lat Hem
+                <select id="conv-dms-lat-hem"><option value="N">N</option><option value="S">S</option></select>
+              </label>
+              <label>Lat Deg
+                <input id="conv-dms-lat-deg" type="number" min="0" max="90" step="1" />
+              </label>
+              <label>Lat Min
+                <input id="conv-dms-lat-min" type="number" min="0" max="59" step="1" />
+              </label>
+              <label>Lat Sec
+                <input id="conv-dms-lat-sec" type="number" min="0" max="59.9999" step="any" />
+              </label>
+
+              <label>Lon Hem
+                <select id="conv-dms-lon-hem"><option value="E">E</option><option value="W">W</option></select>
+              </label>
+              <label>Lon Deg
+                <input id="conv-dms-lon-deg" type="number" min="0" max="180" step="1" />
+              </label>
+              <label>Lon Min
+                <input id="conv-dms-lon-min" type="number" min="0" max="59" step="1" />
+              </label>
+              <label>Lon Sec
+                <input id="conv-dms-lon-sec" type="number" min="0" max="59.9999" step="any" />
+              </label>
+            </div>
+          </div>
+
+          <div id="conv-input-dmm" class="conv-input-block">
+            <div class="conversions-grid-3">
+              <label>Lat Hem
+                <select id="conv-dmm-lat-hem"><option value="N">N</option><option value="S">S</option></select>
+              </label>
+              <label>Lat Deg
+                <input id="conv-dmm-lat-deg" type="number" min="0" max="90" step="1" />
+              </label>
+              <label>Lat Dec Min
+                <input id="conv-dmm-lat-min" type="number" min="0" max="59.9999" step="any" />
+              </label>
+
+              <label>Lon Hem
+                <select id="conv-dmm-lon-hem"><option value="E">E</option><option value="W">W</option></select>
+              </label>
+              <label>Lon Deg
+                <input id="conv-dmm-lon-deg" type="number" min="0" max="180" step="1" />
+              </label>
+              <label>Lon Dec Min
+                <input id="conv-dmm-lon-min" type="number" min="0" max="59.9999" step="any" />
+              </label>
+            </div>
+          </div>
+
+          <div id="conv-input-mgrs" class="conv-input-block">
+            <label>MGRS
+              <input id="conv-mgrs" type="text" placeholder="e.g. 11SLT 12345 67890" />
+            </label>
+          </div>
+
+          <div class="conversions-actions">
+            <button class="btn primary" id="conv-convert-btn">Convert</button>
+          </div>
+          <div id="conv-status" class="conv-status">Ready.</div>
+        </div>
+
+        <div class="conversions-output-card">
+          <div class="conv-output-row">
+            <span class="conv-output-label">LL</span>
+            <span id="conv-out-ll" class="conv-output-value">---</span>
+          </div>
+          <div class="conv-output-row">
+            <span class="conv-output-label">DMS</span>
+            <span id="conv-out-dms" class="conv-output-value">---</span>
+          </div>
+          <div class="conv-output-row">
+            <span class="conv-output-label">DMM</span>
+            <span id="conv-out-dmm" class="conv-output-value">---</span>
+          </div>
+          <div class="conv-output-row">
+            <span class="conv-output-label">MGRS</span>
+            <span id="conv-out-mgrs" class="conv-output-value">---</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MODAL: Add / Edit Checklist -->
+  <div class="modal-overlay" id="checklist-modal" style="display:none;">
+    <div class="modal">
+      <h2 id="modal-title">New Checklist</h2>
+      <label>Aircraft Type
+        <select id="modal-aircraft-type">
+          <option value="fixed-wing">Fixed Wing</option>
+          <option value="rotary">Rotary</option>
+        </select>
+      </label>
+      <label>Aircraft
+        <select id="modal-aircraft-select"></select>
+      </label>
+      <label id="modal-aircraft-custom-wrap" style="display:none;">Custom Aircraft
+        <input type="text" id="modal-aircraft-custom" placeholder="e.g. AH-64D" />
+      </label>
+      <label>Phase / Name
+        <input type="text" id="modal-phase" placeholder="e.g. Startup, Takeoff" />
+      </label>
+      <label>Items <span class="hint">(one per line, prefix with * for WARNING)</span>
+        <textarea id="modal-items" rows="12" placeholder="Canopy — CLOSE&#10;Master Arm — SAFE&#10;* RADALT — CHECK"></textarea>
+      </label>
+      <div class="modal-actions">
+        <button class="btn secondary" id="modal-cancel">Cancel</button>
+        <button class="btn primary" id="modal-save">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- WEIGHT & BALANCE TAB -->
+  <section id="tab-wab" class="tab-content">
+    <div class="wab-panel">
+      <!-- Summary -->
+      <div class="wab-summary">
+        <div class="wab-summary-row">
+          <div class="wab-summary-item">
+            <span class="wab-label">Gross Weight</span>
+            <span class="wab-value" id="wab-gw">---</span>
+          </div>
+          <div class="wab-summary-item">
+            <span class="wab-label">CG % MAC</span>
+            <span class="wab-value" id="wab-cg-pct">---</span>
+          </div>
+          <div class="wab-summary-item">
+            <span class="wab-label">CG FS (in)</span>
+            <span class="wab-value" id="wab-cg-fs">---</span>
+          </div>
+        </div>
+        <div class="wab-status" id="wab-status">---</div>
+      </div>
+
+      <!-- Aircraft base weight -->
+      <div class="wab-section">
+        <span class="wab-section-title">Aircraft Base Weight</span>
+        <div class="wab-row">
+          <label>Empty Weight (lbs)</label>
+          <input type="number" id="wab-empty-weight" value="75562" min="0" max="200000" readonly title="Fixed aircraft empty weight" />
+        </div>
+        <div class="wab-row">
+          <label>Empty CG Arm (FS in)</label>
+          <input type="number" id="wab-empty-arm" value="524.6" step="0.1" min="0" max="1000" />
+        </div>
+      </div>
+
+      <!-- Fuel -->
+      <div class="wab-section">
+        <span class="wab-section-title">Fuel</span>
+        <div class="wab-row">
+          <label>Fuel Weight (lbs)</label>
+          <input type="number" id="wab-fuel-weight" value="20000" min="0" max="62000" />
+        </div>
+        <div class="wab-row">
+          <label>Fuel Arm (FS in)</label>
+          <input type="number" id="wab-fuel-arm" value="516.0" step="0.1" min="0" max="1000" />
+        </div>
+      </div>
+
+      <!-- Cargo -->
+      <div class="wab-section wab-cargo-section">
+        <div class="wab-section-header">
+          <span class="wab-section-title" style="margin-bottom:0;">Cargo Types</span>
+        </div>
+        <div class="wab-cargo-editor">
+          <div class="wab-cargo-controls">
+            <label>Add Cargo Item:</label>
+            <div class="wab-cargo-input-row">
+              <select id="wab-cargo-type-select" title="Select cargo type">
+                <option value="">-- Select Cargo Type --</option>
+              </select>
+              <input type="number" id="wab-cargo-weight-input" placeholder="Payload (lbs)" min="0" value="0" />
+              <button class="wab-add-cargo-btn" id="wab-add-cargo-btn" title="Add cargo item">Add Cargo</button>
+            </div>
+          </div>
+          <div id="wab-cargo-list" class="wab-cargo-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right panel: Interactive Cargo Hold -->
+    <div class="wab-chart-panel">
+      <div class="wab-chart-title">C-130J Cargo Hold — Drag to Reposition</div>
+      <div class="wab-cargobay-wrap">
+        <div class="wab-cargobay" id="wab-cargobay">
+          <img src="assets/load_sheet.svg" alt="C-130J Load Sheet" class="wab-cargobay-bg" />
+          <div class="wab-cargo-items" id="wab-cargo-items"></div>
+          <div class="wab-cg-indicator" id="wab-cg-indicator">
+            <div class="wab-cg-crosshair"></div>
+            <span class="wab-cg-label"></span>
+          </div>
+        </div>
+      </div>
+      <div class="wab-cargo-info">
+        <div class="wab-cg-display">
+          <span class="wab-cg-status" id="wab-cg-status">Gross Weight: --- | CG: --- % MAC | FS: --- in</span>
+        </div>
+        <div class="wab-limits-info">
+          <div class="wab-limits-row"><span>Forward Limit</span><span>16% MAC (FS 533.9 in)</span></div>
+          <div class="wab-limits-row"><span>Aft Limit</span><span>34% MAC (&le;130k) / 32% (&ge;155k)</span></div>
+          <div class="wab-limits-row"><span>Projected CG (Weight)</span><span id="wab-projected-cg">--- % MAC (FS --- in)</span></div>
+          <div class="wab-limits-row"><span>Max Gross Weight</span><span>175,000 lbs</span></div>
+          <div class="wab-limits-row"><span>Cargo Stations</span><span>FS 335-1141 in</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MANUALS TAB -->
+  <section id="tab-manuals" class="tab-content">
+    <div class="sidebar" id="manuals-sidebar">
+      <div class="sidebar-header">
+        <span>Aircraft Manuals</span>
+        <label class="icon-btn" title="Add manual" id="add-manual-label">＋
+          <input type="file" id="add-manual-input" accept="image/*,application/pdf" multiple style="display:none;" />
+        </label>
+      </div>
+      <div class="charts-list" id="manuals-list"></div>
+    </div>
+
+    <div class="main-panel" id="manuals-main">
+      <div class="chart-toolbar">
+        <span class="chart-title" id="active-manual-title">Select a manual</span>
+        <div class="toolbar-actions">
+          <button class="icon-btn" id="manual-zoom-in-btn" title="Zoom in">＋</button>
+          <button class="icon-btn" id="manual-zoom-out-btn" title="Zoom out">－</button>
+          <button class="icon-btn" id="manual-zoom-reset-btn" title="Reset zoom">⊡</button>
+          <button class="icon-btn danger" id="delete-manual-btn" title="Delete manual">🗑</button>
+        </div>
+      </div>
+      <div class="chart-viewer" id="manual-viewer">
+        <div class="empty-state">
+          <p>Tap ＋ to add aircraft manuals<br/>(images or PDFs)</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script src="app.js"></script>
+</body>
+</html>
